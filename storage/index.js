@@ -67,7 +67,7 @@ export const createBlobFromLocalPath = async (url, accountKey, localFileWithPath
           maxConcurrency || defaultMaxConcurrency,
           {
             onProgress: (ev) => {
-              progressFn({ ev, size: fileStats.size });
+              progressFn(ev, fileStats.size);
             }
           }
         );
