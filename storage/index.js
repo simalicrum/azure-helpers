@@ -29,7 +29,7 @@ export const createBlobServiceClient = (account, accountKey) => {
 }
 
 export const createBlockBlobClient = (url, accountKey) => {
-  const [match, account] = url.match(/https:\/\/(\w+)\.blob\.core\.windows\.net/g);
+  const [match, account] = url.match(/https:\/\/(\w+)\.blob\.core\.windows\.net/);
   const sharedKeyCredential = new StorageSharedKeyCredential(account, accountKey);
   const blockBlobClient = new BlockBlobClient(url, sharedKeyCredential);
   return blockBlobClient;
@@ -40,9 +40,13 @@ export const listContainers = (account, accountKey) => {
   return blobServiceClient.listContainers();
 }
 
+const defaultMaxConcurrency = 20;
+const defaultBlockSize = 4 * 1024 * 1024;
+
 export const createBlobFromLocalPath = async (url, accountKey, localFileWithPath, uploadOptions, progressFn) => {
   try {
-    const blockBlobClient = new createBlockBlobClient(url, accountKey);
+    const { highWaterMark, blockSize, maxConcurrency } = uploadOptions;
+    const blockBlobClient = createBlockBlobClient(url, accountKey);
     // Get source file size in bytes
     const fileStats = fs.statSync(localFileWithPath);
     // Get destination blob file size in bytes.
@@ -57,10 +61,10 @@ export const createBlobFromLocalPath = async (url, accountKey, localFileWithPath
         // Blob was not found in destination so upload file to blob storage
         const res = await blockBlobClient.uploadStream(
           fs.createReadStream(localFileWithPath, {
-            highWaterMark: blockSize,
+            highWaterMark: blockSize || defaultBlockSize,
           }),
-          blockSize,
-          maxConcurrency,
+          blockSize || defaultBlockSize,
+          maxConcurrency || defaultMaxConcurrency,
           {
             onProgress: (ev) => {
               progressFn(ev);
