@@ -40,6 +40,12 @@ export const listContainers = (account, accountKey) => {
   return blobServiceClient.listContainers();
 }
 
+export const listBlobsFlat = (account, accountKey, container) => {
+  const blobServiceClient = createBlobServiceClient(account, accountKey);
+  const containerClient = blobServiceClient.getContainerClient(container);
+  return containerClient.listBlobsFlat();
+}
+
 const defaultMaxConcurrency = 20;
 const defaultBlockSize = 4 * 1024 * 1024;
 
