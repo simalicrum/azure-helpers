@@ -1,6 +1,6 @@
 import { StorageManagementClient } from "@azure/arm-storage";
 import { DefaultAzureCredential } from "@azure/identity";
-import { StorageSharedKeyCredential, BlobServiceClient, BlockBlobClient } from "@azure/storage-blob";
+import { StorageSharedKeyCredential, BlobServiceClient, BlockBlobClient, BlobClient } from "@azure/storage-blob";
 import fs from 'fs';
 
 export const storageAccountList = async (subscriptionId) => {
@@ -35,6 +35,13 @@ export const createBlockBlobClient = (url, accountKey) => {
   return blockBlobClient;
 }
 
+export const createBlobClient = (url, accountKey) => {
+  const [match, account] = url.match(/https:\/\/(\w+)\.blob\.core\.windows\.net/);
+  const sharedKeyCredential = new StorageSharedKeyCredential(account, accountKey);
+  const blobClient = new BlobClient(url, sharedKeyCredential);
+  return blobClient;
+}
+
 export const listContainers = (account, accountKey) => {
   const blobServiceClient = createBlobServiceClient(account, accountKey);
   return blobServiceClient.listContainers();
@@ -46,10 +53,10 @@ export const listBlobsFlat = (account, accountKey, container, options) => {
   return containerClient.listBlobsFlat(options);
 }
 
-export const listBlobsHierarchy = (account, accountKey, container, options) => {
+export const listBlobsHierarchy = (account, accountKey, container, delimiter, options) => {
   const blobServiceClient = createBlobServiceClient(account, accountKey);
   const containerClient = blobServiceClient.getContainerClient(container);
-  return containerClient.listBlobsFlat(options);
+  return containerClient.listBlobsFlat(delimiter, options);
 }
 
 const defaultMaxConcurrency = 20;
@@ -95,4 +102,9 @@ export const createBlobFromLocalPath = async (url, accountKey, localFileWithPath
     }
 
   }
+}
+
+export const deleteBlob = async (url, accountKey, options) => {
+  const blobClient = createBlobClient(url, accountKey);
+  return blobClient.delete(options);
 }

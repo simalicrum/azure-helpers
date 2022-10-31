@@ -1,6 +1,6 @@
 {
   "name": "@simalicrum/azure-helpers",
-  "version": "1.0.7",
+  "version": "1.0.14",
   "description": "",
   "main": "index.js",
   "type": "module",
@@ -8,5 +8,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@azure/arm-storage": "^18.0.0",
+    "@azure/identity": "^3.0.0",
+    "@azure/storage-blob": "^12.12.0"
+  }
 }
