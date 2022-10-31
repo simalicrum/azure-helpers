@@ -53,10 +53,10 @@ export const listBlobsFlat = (account, accountKey, container, options) => {
   return containerClient.listBlobsFlat(options);
 }
 
-export const listBlobsHierarchy = (account, accountKey, container, delimiter, options) => {
+export const listBlobsByHierarchy = (account, accountKey, container, delimiter, options) => {
   const blobServiceClient = createBlobServiceClient(account, accountKey);
   const containerClient = blobServiceClient.getContainerClient(container);
-  return containerClient.listBlobsHierarchy(delimiter, options);
+  return containerClient.listBlobsByHierarchy(delimiter, options);
 }
 
 const defaultMaxConcurrency = 20;
