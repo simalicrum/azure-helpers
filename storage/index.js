@@ -60,7 +60,21 @@ export const listBlobsFlat = (account, accountKey, container, options) => {
   return containerClient.listBlobsFlat(options);
 }
 
+export const listBlobsFlatByUrl = (url, accountKey, options) => {
+  const [match, account, container] = url.match(/https:\/\/(\w+)\.blob\.core\.windows\.net\/(\w+)\//);
+  const blobServiceClient = createBlobServiceClient(account, accountKey);
+  const containerClient = blobServiceClient.getContainerClient(container);
+  return containerClient.listBlobsFlat(options);
+}
+
 export const listBlobsByHierarchy = (account, accountKey, container, delimiter, options) => {
+  const blobServiceClient = createBlobServiceClient(account, accountKey);
+  const containerClient = blobServiceClient.getContainerClient(container);
+  return containerClient.listBlobsByHierarchy(delimiter, options);
+}
+
+export const listBlobsByHierarchybyUrl = (url, accountKey, delimiter, options) => {
+  const [match, account, container] = url.match(/https:\/\/(\w+)\.blob\.core\.windows\.net\/(\w+)\//);
   const blobServiceClient = createBlobServiceClient(account, accountKey);
   const containerClient = blobServiceClient.getContainerClient(container);
   return containerClient.listBlobsByHierarchy(delimiter, options);
@@ -130,3 +144,4 @@ export const setBlobsAccessTier = async (urls, accountKey, tier, options) => {
   const blobBatchClient = createBlobBatchClient(urls[0], accountKey);
   return blobBatchClient.setBlobsAccessTier(urls, tier, options);
 }
+
