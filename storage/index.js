@@ -136,12 +136,19 @@ export const setAccessTier = async (url, accountKey, tier, options) => {
 }
 
 export const deleteBlobs = async (urls, accountKey, options) => {
-  const blobBatchClient = createBlobBatchClient(urls[0], accountKey);
-  return blobBatchClient.deleteBlobs(urls, options);
+  const url = new URL(urls[0]);
+  const blobBatchClient = createBlobBatchClient(url.origin, accountKey);
+  const [match, account] = urls[0].match(/https:\/\/(\w+)\.blob\.core\.windows\.net/);
+  const sharedKeyCredential = new StorageSharedKeyCredential(account, accountKey);
+  return blobBatchClient.deleteBlobs(urls, sharedKeyCredential, options);
 }
 
+
 export const setBlobsAccessTier = async (urls, accountKey, tier, options) => {
-  const blobBatchClient = createBlobBatchClient(urls[0], accountKey);
-  return blobBatchClient.setBlobsAccessTier(urls, tier, options);
+  const url = new URL(urls[0]);
+  const blobBatchClient = createBlobBatchClient(url.origin, accountKey);
+  const [match, account] = urls[0].match(/https:\/\/(\w+)\.blob\.core\.windows\.net/);
+  const sharedKeyCredential = new StorageSharedKeyCredential(account, accountKey);
+  return blobBatchClient.setBlobsAccessTier(urls, sharedKeyCredential, tier, options);
 }
 
