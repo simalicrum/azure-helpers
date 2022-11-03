@@ -1,6 +1,6 @@
 import { StorageManagementClient } from "@azure/arm-storage";
 import { DefaultAzureCredential } from "@azure/identity";
-import { StorageSharedKeyCredential, BlobServiceClient, BlockBlobClient, BlobClient } from "@azure/storage-blob";
+import { StorageSharedKeyCredential, BlobServiceClient, BlockBlobClient, BlobClient, BlobBatchClient } from "@azure/storage-blob";
 import fs from 'fs';
 
 export const storageAccountList = async (subscriptionId) => {
@@ -35,10 +35,17 @@ export const createBlockBlobClient = (url, accountKey) => {
   return blockBlobClient;
 }
 
-export const createBlobClient = (url, accountKey) => {
+export const createBlobClient = (url, accountKey, options) => {
   const [match, account] = url.match(/https:\/\/(\w+)\.blob\.core\.windows\.net/);
   const sharedKeyCredential = new StorageSharedKeyCredential(account, accountKey);
-  const blobClient = new BlobClient(url, sharedKeyCredential);
+  const blobClient = new BlobClient(url, sharedKeyCredential, options);
+  return blobClient;
+}
+
+export const createBlobBatchClient = (url, accountKey, options) => {
+  const [match, account] = url.match(/https:\/\/(\w+)\.blob\.core\.windows\.net/);
+  const sharedKeyCredential = new StorageSharedKeyCredential(account, accountKey);
+  const blobClient = new BlobBatchClient(url, sharedKeyCredential, options);
   return blobClient;
 }
 
@@ -107,4 +114,19 @@ export const createBlobFromLocalPath = async (url, accountKey, localFileWithPath
 export const deleteBlob = async (url, accountKey, options) => {
   const blobClient = createBlobClient(url, accountKey);
   return blobClient.delete(options);
+}
+
+export const setAccessTier = async (url, accountKey, tier, options) => {
+  const blobClient = createBlobClient(url, accountKey);
+  return blobClient.setAccessTier(tier, options);
+}
+
+export const deleteBlobs = async (urls, accountKey, options) => {
+  const blobBatchClient = createBlobBatchClient(urls[0], accountKey);
+  return blobBatchClient.deleteBlobs(urls, options);
+}
+
+export const setBlobsAccessTier = async (urls, accountKey, tier, options) => {
+  const blobBatchClient = createBlobBatchClient(urls[0], accountKey);
+  return blobBatchClient.setBlobsAccessTier(urls, tier, options);
 }
