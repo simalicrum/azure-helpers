@@ -3,21 +3,16 @@ import { DefaultAzureCredential } from "@azure/identity";
 import { StorageSharedKeyCredential, BlobServiceClient, BlockBlobClient, BlobClient, BlobBatchClient } from "@azure/storage-blob";
 import fs from 'fs';
 
-export const storageAccountList = async (subscriptionId) => {
+export const storageAccountList = (subscriptionId) => {
   const credential = new DefaultAzureCredential();
   const client = new StorageManagementClient(credential, subscriptionId);
-  const resArray = new Array();
-  for await (let item of client.storageAccounts.list()) {
-    resArray.push(item);
-  }
-  return resArray;
+  return client.storageAccounts.list();
 }
 
-export const storageAccountListKeys = async (subscriptionId, resourceGroupName, accountName) => {
+export const storageAccountListKeys = (subscriptionId, resourceGroupName, accountName) => {
   const credential = new DefaultAzureCredential();
   const client = new StorageManagementClient(credential, subscriptionId);
-  const result = await client.storageAccounts.listKeys(resourceGroupName, accountName);
-  return result;
+  return client.storageAccounts.listKeys(resourceGroupName, accountName);
 }
 
 export const createBlobServiceClient = (account, accountKey) => {
@@ -153,13 +148,19 @@ export const setBlobsAccessTier = async (urls, accountKey, tier, options) => {
 }
 
 export const storageAccountsListProps = async (subscriptionId) => {
-  const storageAccounts = await storageAccountList(subscriptionId);
-  for (const [i, storageAccount] of storageAccounts.entries()) {
+  let storageAccounts = [];
+  let promises = [];
+  for await (const storageAccount of storageAccountList(subscriptionId)) {
     const [match, resourceGroup] = storageAccount.id.match(/\/resourceGroups\/(.*?)\//);
-    const keys = await storageAccountListKeys(subscriptionId, resourceGroup, storageAccount.name);
-    storageAccounts[i].keys = keys.keys;
-    storageAccounts[i].resourceGroup = resourceGroup;
-    storageAccounts[i].containers = [];
+    storageAccounts.push({ ...storageAccount, resourceGroup });
+    promises.push(storageAccountListKeys(subscriptionId, resourceGroup, storageAccount.name));
   }
+  const keys = await Promise.all(promises);
+  storageAccounts = storageAccounts.map((element, index) => ({
+    ...element,
+    keys: keys[index].keys
+  }))
   return storageAccounts;
 }
+
+export const createUrl = (path, account, container) => `https://${account}.blob.core.windows.net/${container}/${path}`;
