@@ -152,3 +152,14 @@ export const setBlobsAccessTier = async (urls, accountKey, tier, options) => {
   return blobBatchClient.setBlobsAccessTier(urls, sharedKeyCredential, tier, options);
 }
 
+export const storageAccountsListProps = async (subscriptionId) => {
+  const storageAccounts = await storageAccountList(subscriptionId);
+  for (const [i, storageAccount] of storageAccounts.entries()) {
+    const [match, resourceGroup] = storageAccount.id.match(/\/resourceGroups\/(.*?)\//);
+    const keys = await storageAccountListKeys(process.env.AZURE_SUBSCRIPTION_ID, resourceGroup, storageAccount.name);
+    storageAccounts[i].keys = keys.keys;
+    storageAccounts[i].resourceGroup = resourceGroup;
+    storageAccounts[i].containers = [];
+  }
+  return storageAccounts;
+}
