@@ -156,7 +156,7 @@ export const storageAccountsListProps = async (subscriptionId) => {
   const storageAccounts = await storageAccountList(subscriptionId);
   for (const [i, storageAccount] of storageAccounts.entries()) {
     const [match, resourceGroup] = storageAccount.id.match(/\/resourceGroups\/(.*?)\//);
-    const keys = await storageAccountListKeys(process.env.AZURE_SUBSCRIPTION_ID, resourceGroup, storageAccount.name);
+    const keys = await storageAccountListKeys(subscriptionId, resourceGroup, storageAccount.name);
     storageAccounts[i].keys = keys.keys;
     storageAccounts[i].resourceGroup = resourceGroup;
     storageAccounts[i].containers = [];
