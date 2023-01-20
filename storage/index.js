@@ -78,6 +78,11 @@ export const listBlobsByHierarchybyUrl = (url, accountKey, delimiter, options) =
 const defaultMaxConcurrency = 20;
 const defaultBlockSize = 4 * 1024 * 1024;
 
+export const writeToBlob = async (url, data, accountKey, uploadOptions) => {
+  const blockBlobClient = createBlockBlobClient(url, accountKey);
+  return blockBlobClient.upload(data, data.length, uploadOptions);
+}
+
 export const createBlobFromLocalPath = async (url, accountKey, localFileWithPath, uploadOptions, progressFn) => {
   try {
     const { highWaterMark, blockSize, maxConcurrency } = uploadOptions;
