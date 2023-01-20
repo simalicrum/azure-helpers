@@ -78,6 +78,13 @@ export const listBlobsByHierarchybyUrl = (url, accountKey, delimiter, options) =
 const defaultMaxConcurrency = 20;
 const defaultBlockSize = 4 * 1024 * 1024;
 
+export const copyBlob = async (sourceUrl, destinationUrl, accountKey) => {
+  const sourceBlobClient = createBlobClient(sourceUrl, accountKey);
+  const destinationBlobClient = createBlobClient(destinationUrl, accountKey);
+  const copyPoller = await destinationBlobClient.beginCopyFromURL(sourceBlobClient.url);
+  return copyPoller.pollUntilDone();
+}
+
 export const writeToBlob = async (url, data, accountKey, uploadOptions) => {
   const blockBlobClient = createBlockBlobClient(url, accountKey);
   return blockBlobClient.upload(data, data.length, uploadOptions);
