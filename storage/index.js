@@ -3,6 +3,15 @@ import { DefaultAzureCredential } from "@azure/identity";
 import { StorageSharedKeyCredential, BlobServiceClient, BlockBlobClient, BlobClient, BlobBatchClient } from "@azure/storage-blob";
 import fs from 'fs';
 
+const streamToText = async (readable) => {
+  readable.setEncoding('utf8');
+  let data = '';
+  for await (const chunk of readable) {
+    data += chunk;
+  }
+  return data;
+}
+
 export const storageAccountList = (subscriptionId) => {
   const credential = new DefaultAzureCredential();
   const client = new StorageManagementClient(credential, subscriptionId);
@@ -83,6 +92,12 @@ export const copyBlob = async (sourceUrl, destinationUrl, accountKey) => {
   const destinationBlobClient = createBlobClient(destinationUrl, accountKey);
   const copyPoller = await destinationBlobClient.beginCopyFromURL(sourceBlobClient.url);
   return copyPoller.pollUntilDone();
+}
+
+export const readBlob = async (url, accountKey) => {
+  const blockBlobClient = createBlockBlobClient(url, accountKey);
+  const downloadBlockBlobResponse = await blockBlobClient.download(0);
+  return streamToText(downloadBlockBlobResponse.readableStreamBody);
 }
 
 export const writeToBlob = async (url, data, accountKey, uploadOptions) => {
