@@ -88,9 +88,10 @@ const defaultMaxConcurrency = 20;
 const defaultBlockSize = 4 * 1024 * 1024;
 
 export const copyBlob = async (sourceUrl, destinationUrl, accountKey) => {
-  const sourceBlobClient = createBlobClient(sourceUrl, accountKey);
   const destinationBlobClient = createBlobClient(destinationUrl, accountKey);
-  const copyPoller = await destinationBlobClient.beginCopyFromURL(sourceBlobClient.url);
+  const copyPoller = await destinationBlobClient.beginCopyFromURL(sourceUrl, {
+    intervalInMs: 1000
+  });
   return copyPoller.pollUntilDone();
 }
 
