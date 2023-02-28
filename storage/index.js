@@ -1,6 +1,9 @@
 import { StorageManagementClient } from "@azure/arm-storage";
 import { DefaultAzureCredential } from "@azure/identity";
-import { StorageSharedKeyCredential, BlobServiceClient, BlockBlobClient, BlobClient, BlobBatchClient } from "@azure/storage-blob";
+import {
+  StorageSharedKeyCredential, BlobServiceClient, BlockBlobClient, BlobClient, BlobBatchClient, BlobSASPermissions,
+  generateBlobSASQueryParameters
+} from "@azure/storage-blob";
 import fs from 'fs';
 
 const streamToText = async (readable) => {
@@ -189,6 +192,36 @@ export const storageAccountsListProps = async (subscriptionId) => {
     keys: keys[index].keys
   }))
   return storageAccounts;
+}
+
+export const createContainerClient = (container, account, accountKey) => {
+  const blobServiceClient = createBlobServiceClient(account, accountKey);
+  return blobServiceClient.getContainerClient(container);
+}
+
+export const getBlobSasUri = (blobName, container, account, accountKey, storedPolicyName) => {
+  const containerClient = createContainerClient(container, account, accountKey);
+  const sasOptions = {
+    containerName: containerClient.containerName,
+    blobName: blobName,
+  };
+
+  if (storedPolicyName == null) {
+    sasOptions.startsOn = new Date();
+    sasOptions.expiresOn = new Date(
+      new Date().valueOf() + 90 * 24 * 3600 * 1000
+    ); // 90 days SaS token expires
+    sasOptions.permissions = BlobSASPermissions.parse("r");
+  } else {
+    sasOptions.identifier = storedPolicyName;
+  }
+
+  const sasToken = generateBlobSASQueryParameters(
+    sasOptions,
+    sharedKeyCredential
+  ).toString();
+
+  return `${containerClient.getBlockBlobClient(blobName).url}?${sasToken}`;
 }
 
 export const createUrl = (path, account, container) => `https://${account}.blob.core.windows.net/${container}/${path}`;
