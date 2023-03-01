@@ -200,6 +200,7 @@ export const createContainerClient = (container, account, accountKey) => {
 }
 
 export const getBlobSasUri = (blobName, container, account, accountKey, storedPolicyName) => {
+  const sharedKeyCredential = new StorageSharedKeyCredential(account, accountKey);
   const containerClient = createContainerClient(container, account, accountKey);
   const sasOptions = {
     containerName: containerClient.containerName,
