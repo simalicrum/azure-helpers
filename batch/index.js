@@ -19,6 +19,11 @@ export const getBatchPool = (url, account, accountKey, poolId) => {
   return batchServiceClient.pool.get(poolId);
 }
 
+export const addBatchPool = (url, account, accountKey, poolConfig) => {
+  const batchServiceClient = createBatchServiceClient(url, account, accountKey);
+  return batchServiceClient.pool.add(poolConfig);
+}
+
 export const addBatchJob = (url, account, accountKey, jobConfig) => {
   const batchServiceClient = createBatchServiceClient(url, account, accountKey);
   return batchServiceClient.job.add(jobConfig);
