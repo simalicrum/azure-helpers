@@ -178,6 +178,11 @@ export const setBlobsAccessTier = async (urls, accountKey, tier, options) => {
   return blobBatchClient.setBlobsAccessTier(urls, sharedKeyCredential, tier, options);
 }
 
+export const getBlobProps = (url, accountKey, options) => {
+  const blobClient = createBlobClient(url, accountKey);
+  return blobClient.getProperties(options);
+}
+
 export const storageAccountsListProps = async (subscriptionId) => {
   let storageAccounts = [];
   let promises = [];
