@@ -35,27 +35,16 @@ export const beginCreateOrUpdateAndWaitSystemTopic = (
   );
 };
 
-export const listBySubscriptionSystemTopics = async (subscriptionId) => {
+export const systemTopicsList = (subscriptionId) => {
   const client = createEventGridManagementClient(subscriptionId);
-  const resArray = new Array();
-  for await (let item of client.systemTopics.listBySubscription()) {
-    resArray.push(item);
-  }
-  return resArray;
+  return client.systemTopics.listBySubscription();
 };
 
-export const listTopicEventSubscriptions = async (
+export const topicEventSubscriptionsList = (
   subscriptionId,
   resourceGroupName,
   topicName
 ) => {
   const client = createEventGridManagementClient(subscriptionId);
-  const resArray = new Array();
-  for await (let item of client.topicEventSubscriptions.list(
-    resourceGroupName,
-    topicName
-  )) {
-    resArray.push(item);
-  }
-  return resArray;
+  return client.topicEventSubscriptions.list(resourceGroupName, topicName);
 };
