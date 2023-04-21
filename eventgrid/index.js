@@ -48,3 +48,26 @@ export const topicEventSubscriptionsList = (
   const client = createEventGridManagementClient(subscriptionId);
   return client.topicEventSubscriptions.list(resourceGroupName, topicName);
 };
+
+export const getSystemTopics = (
+  subscriptionId,
+  resourceGroupName,
+  systemTopicName
+) => {
+  const client = createEventGridManagementClient(subscriptionId);
+  return client.systemTopics.get(resourceGroupName, systemTopicName);
+};
+
+export const getSystemTopicEventSubscriptions = (
+  subscriptionId,
+  resourceGroupName,
+  systemTopicName,
+  eventSubscriptionName
+) => {
+  const client = createEventGridManagementClient(subscriptionId);
+  return client.systemTopicEventSubscriptions.get(
+    resourceGroupName,
+    systemTopicName,
+    eventSubscriptionName
+  );
+};
