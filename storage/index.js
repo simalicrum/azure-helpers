@@ -309,3 +309,10 @@ export const createUrl = (path, account, container) =>
   `https://${account}.blob.core.windows.net/${container}/${encodeURIComponent(
     path
   )}`;
+
+export const parseStorageAccountId = (id) => {
+  const [match, subscriptionId, resourceGroup, account] = id.match(
+    /\/subscriptions\/(.*?)\/resourceGroups\/(.*?)\/providers\/Microsoft\.Storage\/storageAccounts\/(.*?)$/
+  );
+  return { subscriptionId, resourceGroup, account };
+};
