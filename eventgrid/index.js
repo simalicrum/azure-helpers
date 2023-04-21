@@ -7,7 +7,7 @@ export const createEventGridManagementClient = (subscriptionId) => {
   return client;
 };
 
-export const beginCreateOrUpdateAndWaitEventSubscription = (
+export const createOrUpdateEventSubscription = (
   subscriptionId,
   scope,
   eventSubscriptionName,
@@ -21,7 +21,23 @@ export const beginCreateOrUpdateAndWaitEventSubscription = (
   );
 };
 
-export const beginCreateOrUpdateAndWaitSystemTopic = (
+export const createSystemTopicEventSubscription = (
+  subscriptionId,
+  resourceGroupName,
+  systemTopicName,
+  eventSubscriptionName,
+  eventSubscriptionInfo
+) => {
+  const client = createEventGridManagementClient(subscriptionId);
+  return client.systemTopicEventSubscriptions.beginCreateOrUpdateAndWait(
+    resourceGroupName,
+    systemTopicName,
+    eventSubscriptionName,
+    eventSubscriptionInfo
+  );
+};
+
+export const createOrUpdateSystemTopic = (
   subscriptionId,
   resourceGroupName,
   systemTopicName,
