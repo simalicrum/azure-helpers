@@ -316,3 +316,10 @@ export const parseStorageAccountId = (id) => {
   );
   return { subscriptionId, resourceGroup, account };
 };
+
+export const parseStorageTriggerSubject = (subject) => {
+  const [match, container, blob] = subject.match(
+    /\/blobServices\/default\/containers\/(.*?)\/blobs\/(.*)$/
+  );
+  return { container, blob };
+};
