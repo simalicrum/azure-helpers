@@ -11,7 +11,8 @@ import {
   AccountSASPermissions,
   AccountSASServices,
   AccountSASResourceTypes,
-  SASProtocol
+  SASProtocol,
+  generateAccountSASQueryParameters
 } from "@azure/storage-blob";
 import fs from "fs";
 
