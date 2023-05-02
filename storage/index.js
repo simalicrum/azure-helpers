@@ -310,6 +310,31 @@ export const createUrl = (path, account, container) =>
     path
   )}`;
 
+export const createAccountSas = (account, accountKey) => {
+  const sharedKeyCredential = new StorageSharedKeyCredential(
+    account,
+    accountKey
+  );
+  const sasOptions = {
+    services: AccountSASServices.parse("btqf").toString(),          // blobs, tables, queues, files
+    resourceTypes: AccountSASResourceTypes.parse("sco").toString(), // service, container, object
+    permissions: AccountSASPermissions.parse("rwdlacupi"),          // permissions
+    protocol: SASProtocol.Https,
+    startsOn: new Date(),
+    expiresOn: new Date(new Date().valueOf() + (90 * 24 * 3600 * 1000)),   // 90 days
+  };
+
+  const sasToken = generateAccountSASQueryParameters(
+    sasOptions,
+    sharedKeyCredential
+  ).toString();
+
+  console.log(`sasToken = '${sasToken}'\n`);
+
+  // prepend sasToken with `?`
+  return (sasToken[0] === '?') ? sasToken : `?${sasToken}`;
+}
+
 export const parseStorageAccountId = (id) => {
   const [match, subscriptionId, resourceGroup, account] = id.match(
     /\/subscriptions\/(.*?)\/resourceGroups\/(.*?)\/providers\/Microsoft\.Storage\/storageAccounts\/(.*?)$/
