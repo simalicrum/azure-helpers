@@ -334,8 +334,6 @@ export const createAccountSas = (account, accountKey) => {
     sharedKeyCredential
   ).toString();
 
-  console.log(`sasToken = '${sasToken}'\n`);
-
   // prepend sasToken with `?`
   return (sasToken[0] === '?') ? sasToken : `?${sasToken}`;
 }
