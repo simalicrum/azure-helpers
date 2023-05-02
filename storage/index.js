@@ -8,6 +8,10 @@ import {
   BlobBatchClient,
   BlobSASPermissions,
   generateBlobSASQueryParameters,
+  AccountSASPermissions,
+  AccountSASServices,
+  AccountSASResourceTypes,
+  SASProtocol
 } from "@azure/storage-blob";
 import fs from "fs";
 
